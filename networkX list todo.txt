@@ -1,0 +1,11 @@
+Find every triad
+Calculate Significance
+Read in files (validate files?)
+
+triadic_census - returns type of triads and number of occurences
+Create functions that search for specific type of triad? Returns relevant nodes/ids/from/to
+
+Hand list of nodes/ids/from/to to front end
+FILTERED
+
+Find triads based on significance slider value (called from front end)
