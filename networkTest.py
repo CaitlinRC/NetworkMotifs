@@ -1,5 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import json
+import os
 
 def getting_Triangles(G):
 
@@ -58,12 +60,16 @@ TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
 trianglesList = []
 currentGraph = nx.DiGraph()
 
+if os.path.exists('triads.txt'):
+    os.remove('triads.txt')
+
+
 for triangle in getting_Triangles(G):
     trianglesList.append(triangle)
 
 
 for triangle in trianglesList:
     triangleCode = TRICODE_TO_NAME[tricode(G, triangle[0], triangle[1], triangle[2])]
-    print(triangle, triangleCode)
 
-    # This can be what we hand to the front end?
+    with open('triads.txt', 'a') as json_file:
+        json.dump((triangle[0], triangle[1], triangle[2], triangleCode), json_file)
