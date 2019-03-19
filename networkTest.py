@@ -60,8 +60,8 @@ TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
 trianglesList = []
 currentGraph = nx.DiGraph()
 
-if os.path.exists('triads.txt'):
-    os.remove('triads.txt')
+if os.path.exists('triads.json'):
+    os.remove('triads.json')
 
 
 for triangle in getting_Triangles(G):
@@ -71,5 +71,5 @@ for triangle in getting_Triangles(G):
 for triangle in trianglesList:
     triangleCode = TRICODE_TO_NAME[tricode(G, triangle[0], triangle[1], triangle[2])]
 
-    with open('triads.txt', 'a') as json_file:
+    with open('triads.json', 'a') as json_file:
         json.dump((triangle[0], triangle[1], triangle[2], triangleCode), json_file)
