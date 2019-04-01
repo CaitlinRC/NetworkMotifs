@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import json
 import os
+from pathlib import Path
 
 def getting_Triangles(G):
 
@@ -27,8 +28,23 @@ def tricode(G, v, u, w):
               (w, u, 32))
     return sum(x for u, v, x in combos if v in G[u])
 
-G = nx.read_adjlist('Datasets/ca-sandi_auths.mtx', create_using=nx.DiGraph())    #Reading mtx
-# G = nx.read_gml("football.gml",label='id')                            #Reading gml
+
+# building menu system:
+# Needs to be able to read in file name and choose appropriate networkx strategy
+#FRONT END PLEASE HAND IN FILE NAME IN STRING FORMAT?
+
+chosenFile = "Datasets/ca-sandi_auths.mtx" # this would be the filename handed in
+#chosenFile = "Datasets/football.gml"
+
+if Path(chosenFile).suffix == ".mtx":
+    G = nx.read_adjlist(chosenFile, create_using=nx.DiGraph())    #Reading mtx
+
+elif Path(chosenFile).suffix == ".gml": # reading gml
+    G = nx.read_gml(chosenFile, label = "id")
+
+else:
+    print('Invalid File Type')
+
 G = nx.to_directed(G)
 
 print("Is directed: ", nx.is_directed(G))
@@ -76,5 +92,5 @@ for triangle in trianglesList:
 
 
         # json.dump((triangle[0], triangle[1], triangle[2], triangleCode), json_file)
-with open('triads.json', 'a') as json_file:
+with open('triads.json', 'w') as json_file:
     json.dump(jsonList, json_file)

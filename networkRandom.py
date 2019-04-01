@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import json
 import os
+from random import *
 
 def getting_Triangles(G):
 
@@ -27,9 +28,13 @@ def tricode(G, v, u, w):
               (w, u, 32))
     return sum(x for u, v, x in combos if v in G[u])
 
-numNodes = input("enter number of nodes\n> ")
-Degree = input("enter degree for nodes\n> ")
-H = nx.random_regular_graph(int(Degree) ,int(numNodes), seed=None)
+numNodes = randint(1, 100)
+Degree = randint(1, numNodes)
+
+while ((numNodes * Degree) % 2 != 0):
+    Degree = randint(1, numNodes)
+
+H = nx.random_regular_graph(Degree, numNodes, seed=None)
 G = H.to_directed()
 print (nx.info(G))
 
@@ -62,8 +67,8 @@ TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
 trianglesList = []
 jsonList = []
 
-if os.path.exists('nullTriads.json'):
-    os.remove('nullTriads.json')
+if os.path.exists('randomTriads.json'):
+    os.remove('randomTriads.json')
 
 
 for triangle in getting_Triangles(G):
@@ -77,5 +82,5 @@ for triangle in trianglesList:
      'connections': [int(triangle[0]), int(triangle[1]), int(triangle[2])]})
 
 
-with open('nullTriads.json', 'w') as json_file:
+with open('randomTriads.json', 'w') as json_file:
     json.dump(jsonList, json_file)
