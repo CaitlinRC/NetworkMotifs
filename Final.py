@@ -35,6 +35,7 @@ def tricode(G, v, u, w):
 
 chosenFile = "Datasets/ca-sandi_auths.mtx" # this would be the filename handed in
 #chosenFile = "Datasets/football.gml"
+#chosenFile = "potato"
 
 if Path(chosenFile).suffix == ".mtx":
     G = nx.read_adjlist(chosenFile, create_using=nx.DiGraph())    #Reading mtx
@@ -44,6 +45,7 @@ elif Path(chosenFile).suffix == ".gml": # reading gml
 
 else:
     print('Invalid File Type')
+    exit()
 
 G = nx.to_directed(G)
 
