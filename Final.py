@@ -1,8 +1,47 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import json
+import statistics
 import os
+import math
+from sklearn import preprocessing
 from pathlib import Path
+
+def calculateStatSignificance(countOfNormal, countOfRandom, randomSubset, regularSubset, normalTotal, randomTotal):
+    # NEEDS TO RETURN Z SCORE
+
+    stDev = statistics.stdev(randomSubset)
+    meanRandom = countOfRandom / randomTotal
+
+
+    return ((countOfNormal - meanRandom) / stDev)
+
+def calculateSignificanceProfile(zScores): # write to json file
+
+    normalisedZ = preprocessing.normalise(zScores, 'l1')
+
+    sumOfZ = sum(normalisedZ)
+
+    divisor = sumOfZ ** 2
+
+    final = math.sqrt(divisor)
+
+    return (normalisedZ / final)
+
+def calculateDeltaValues(countOfNormal, countOfRandom, normalTotal, randomTotal):
+
+    meanRandom = countOfRandom / randomTotal
+
+    return ((countOfNormal - meanRandom) / (countOfNormal + meanRandom))
+
+
+def subgraphRatioProfile(deltaValues): # write answers out into json file
+
+    sumOfDelta = sum(deltaValues)
+    divisor = sumOfDelta ** 2
+    final = math.sqrt(divisor)
+
+    return (deltaValues / final)
 
 def getting_Triangles(G):
 
@@ -53,8 +92,11 @@ print("Is directed: ", nx.is_directed(G))
 print(nx.number_of_nodes(G), " nodes")
 triads = nx.triadic_census(G)
 print("Triad: Occurences")
+triadTotal = 0
 
 for i in triads:
+    triadTotal += triads[i]
+
     if (triads[i] != 0) and (i != '003') and (i != '012') and (i != '102'):
         print(i, " : ", triads[i])
 
@@ -92,7 +134,5 @@ for triangle in trianglesList:
     jsonList.append({'x':int(triangle[0]), 'y':int(triangle[1]), 'z':int(triangle[2]), 'id':triangleCode,
      'connections': [int(triangle[0]), int(triangle[1]), int(triangle[2])]})
 
-
-        # json.dump((triangle[0], triangle[1], triangle[2], triangleCode), json_file)
 with open('triads.json', 'w') as json_file:
     json.dump(jsonList, json_file)
