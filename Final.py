@@ -4,10 +4,10 @@ import json
 import statistics
 import os
 import math
-from sklearn import preprocessing
 from pathlib import Path
+import networkRandom
 
-def calculateStatSignificance(countOfNormal, countOfRandom, randomSubset, regularSubset, normalTotal, randomTotal):
+def calculateStatSignificance(countOfNormal, countOfRandom, randomSubset, normalTotal, randomTotal):
     # NEEDS TO RETURN Z SCORE
 
     stDev = statistics.stdev(randomSubset)
@@ -18,7 +18,7 @@ def calculateStatSignificance(countOfNormal, countOfRandom, randomSubset, regula
 
 def calculateSignificanceProfile(zScores): # write to json file
 
-    normalisedZ = preprocessing.normalise(zScores, 'l1')
+    normalisedZ = [float(i)/sum(zScores) for i in zScores]
 
     sumOfZ = sum(normalisedZ)
 
@@ -26,7 +26,9 @@ def calculateSignificanceProfile(zScores): # write to json file
 
     final = math.sqrt(divisor)
 
-    return (normalisedZ / final)
+    values = [x / final for x in normalisedZ]
+
+    return values
 
 def calculateDeltaValues(countOfNormal, countOfRandom, normalTotal, randomTotal):
 
@@ -37,11 +39,13 @@ def calculateDeltaValues(countOfNormal, countOfRandom, normalTotal, randomTotal)
 
 def subgraphRatioProfile(deltaValues): # write answers out into json file
 
+    normalisedDelta = [float(i)/sum(deltaValues) for i in deltaValues]
     sumOfDelta = sum(deltaValues)
     divisor = sumOfDelta ** 2
     final = math.sqrt(divisor)
 
-    return (deltaValues / final)
+    values = [x / final for x in normalisedDelta]
+    return values
 
 def getting_Triangles(G):
 
@@ -67,6 +71,20 @@ def tricode(G, v, u, w):
               (w, u, 32))
     return sum(x for u, v, x in combos if v in G[u])
 
+TRICODES = (1, 2, 2, 3, 2, 4, 6, 8, 2, 6, 5, 7, 3, 8, 7, 11, 2, 6, 4, 8, 5, 9,
+            9, 13, 6, 10, 9, 14, 7, 14, 12, 15, 2, 5, 6, 7, 6, 9, 10, 14, 4, 9,
+            9, 12, 8, 13, 14, 15, 3, 7, 8, 11, 7, 12, 14, 15, 8, 14, 13, 15,
+            11, 15, 15, 16)
+
+#: important: it corresponds to the tricodes given in :data:`TRICODES`.
+TRIAD_NAMES = ('003', '012', '102', '021D', '021U', '021C', '111D', '111U',
+               '030T', '030C', '201', '120D', '120U', '120C', '210', '300')
+
+
+#: A dictionary mapping triad code to triad name.
+TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
+
+# ---------------------------------------------------------------------- #
 
 # building menu system:
 # Needs to be able to read in file name and choose appropriate networkx strategy
@@ -87,35 +105,71 @@ else:
     exit()
 
 G = nx.to_directed(G)
+print(nx.info(G))
+zScores = []
+deltaValues = []
+triadList = []
 
-print("Is directed: ", nx.is_directed(G))
-print(nx.number_of_nodes(G), " nodes")
+
 triads = nx.triadic_census(G)
 print("Triad: Occurences")
 triadTotal = 0
 
 for i in triads:
-    triadTotal += triads[i]
 
     if (triads[i] != 0) and (i != '003') and (i != '012') and (i != '102'):
         print(i, " : ", triads[i])
+        triadList.append(i)
 
+    triadTotal += triads[i]
+
+
+randGraph = networkRandom.runCode() # need to make this as a subgraph of all nodes of a specific triad
+randTriads = nx.triadic_census(randGraph)
+randTotal = 0
+subgraphNodes = []
+newRandGraph = None
+trianglesList = []
+
+for i in randTriads:
+    randTotal += 1
+
+for triangle in getting_Triangles(G):
+    trianglesList.append(triangle)
+
+for i in triads:
+
+    if (triads[i] != 0) and (i != '003') and (i != '012') and (i != '102'):
+
+        for j in randTriads:
+
+            if i == j:
+
+                for triangle in trianglesList:
+                    triangleCode = TRICODE_TO_NAME[tricode(G, triangle[0], triangle[1], triangle[2])]
+
+                    if triangleCode == i:
+                        subgraphNodes.append(int(triangle[0]))
+                        subgraphNodes.append(int(triangle[1]))
+                        subgraphNodes.append(int(triangle[2]))
+
+
+
+                subgraphNodes = set(subgraphNodes)
+                newRandGraph = randGraph.subgraph(subgraphNodes)
+                zScores.append(calculateStatSignificance(triads[i], randTriads[j], newRandGraph, triadTotal, randTotal))
+                deltaValues.append(calculateDeltaValues(triads[i], randTriads[j], triadTotal, randTotal))
+
+                subgraphNodes = []
+
+sigProfile = calculateSignificanceProfile(zScores)
+subgraphRatio = subgraphRatioProfile(deltaValues)
+
+print(sigProfile)
+print(subgraphRatio)
 print("-------------")
+print(triadList)
 
-TRICODES = (1, 2, 2, 3, 2, 4, 6, 8, 2, 6, 5, 7, 3, 8, 7, 11, 2, 6, 4, 8, 5, 9,
-            9, 13, 6, 10, 9, 14, 7, 14, 12, 15, 2, 5, 6, 7, 6, 9, 10, 14, 4, 9,
-            9, 12, 8, 13, 14, 15, 3, 7, 8, 11, 7, 12, 14, 15, 8, 14, 13, 15,
-            11, 15, 15, 16)
-
-#: important: it corresponds to the tricodes given in :data:`TRICODES`.
-TRIAD_NAMES = ('003', '012', '102', '021D', '021U', '021C', '111D', '111U',
-               '030T', '030C', '201', '120D', '120U', '120C', '210', '300')
-
-
-#: A dictionary mapping triad code to triad name.
-TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
-
-# ---------------------------------------------------------------------- #
 
 
 trianglesList = []
@@ -136,3 +190,15 @@ for triangle in trianglesList:
 
 with open('triads.json', 'w') as json_file:
     json.dump(jsonList, json_file)
+
+if os.path.exists('stats.json'):
+    os.remove('stats.json')
+
+statList = []
+
+for i in range(0, len(triadList)):
+
+    statList.append(['Triad Type: ', triadList[i], 'Significance Profile: ', sigProfile[i], 'Subgraph Ratio Profile: ', subgraphRatio[i]])
+
+with open('stats.json', 'w') as json_file:
+    json.dump(statList, json_file)
