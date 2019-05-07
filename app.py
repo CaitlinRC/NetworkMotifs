@@ -106,7 +106,7 @@ def subgraphRatioProfile(deltaValues): # write answers out into json file
 
     values = [x / final for x in normalisedDelta]
     return values
-def networkRandom():
+def networkRandom(numNodes, Degree):
     numNodes = random.randint(1, 100)
     Degree = random.randint(1, numNodes)
 
@@ -214,7 +214,8 @@ def runTriads(graph):
     deltaValues = []
     triadList = []
 
-
+    nodeCount= nx.number_of_nodes(G)
+    edgeCount = nx.number_of_edges(G)
     triads = nx.triadic_census(G)
     print("Triad: Occurences")
     triadTotal = 0
@@ -227,7 +228,7 @@ def runTriads(graph):
 
         triadTotal += triads[i]
 
-    rand_graph = networkRandom() # need to make this as a subgraph of all nodes of a specific triad
+    rand_graph = networkRandom(nodeCount, edgeCount//nodeCount) # need to make this as a subgraph of all nodes of a specific triad
     rand_triads = nx.triadic_census(rand_graph)
     rand_total = 0
     subgraph_nodes = []
@@ -293,11 +294,23 @@ def runTriads(graph):
 
     statList = []
 
-    for i in range(0, len(triadList)):
+    triadListIndex = 0
+    for i in range(0, len(TRIAD_NAMES)):
+        if(TRIAD_NAMES[i] in triadList):
+            statList.append([TRIAD_NAMES[i], sigProfile[triadListIndex]])
+            triadListIndex += 1
+        else:
+            statList.append([TRIAD_NAMES[i], 0]) 
+    #for i in range(0, len(triadList)):
 
-        statList.append(['Triad Type: ', triadList[i], 'Significance Profile: ', sigProfile[i], 'Subgraph Ratio Profile: ', subgraphRatio[i]])
+        #statList.append(['Triad Type: ', triadList[i], 'Significance Profile: ', sigProfile[i], 'Subgraph Ratio Profile: ', subgraphRatio[i]])
 
 
     return jsonList,statList
+#
+# @app.route('/about/')
+# def about():
+#     return render_template('visPage.html')
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
