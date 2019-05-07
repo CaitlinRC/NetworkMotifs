@@ -12,10 +12,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css"/>
-
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheet.css') }}"/>
-<link rel="stylesheet" type="text/css" href='../stylesheet.css'/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='layout.css') }}"/>
+<link rel="stylesheet" type="text/css" href='../static/layout.css'/>
 
 </head>
 <div id="loading-screen" style="display: none">
@@ -35,9 +34,9 @@
     </div>
 
     <div class="col-6 col-md-4">
+      <h2 id=header >Upload new File</h2>
 
       <div id="form">
-        <h2 >Upload new File</h2>
           <form  method=post enctype=multipart/form-data >
             <input class = "b1 btn btn-secondary"type=file name=file>
             <input  class = "btn btn-secondary"type=submit value=Upload onclick="load()">
