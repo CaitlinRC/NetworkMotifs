@@ -28,9 +28,9 @@ def tricode(G, v, u, w):
               (w, u, 32))
     return sum(x for u, v, x in combos if v in G[u])
 
-def runCode():
-    numNodes = randint(1, 100)
-    Degree = randint(1, numNodes)
+def runCode(numNodes, Degree):
+    #numNodes = randint(1, 100)
+    #Degree = randint(1, numNodes)
 
     while ((numNodes * Degree) % 2 != 0):
         Degree = randint(1, numNodes)

@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+<head>
+
+    <title>Network Vis Tests</title>
+    <script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
+    <script type="text/javascript" src="http://visjs.org/examples/network/exampleUtil.js"></script>
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheet.css') }}"/>
+    <link rel="stylesheet" type="text/css" href='../stylesheet.css'/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <body>
+      <body>
+        <div class="jumbotron text-center">
+          <h1 >Network motifs tool</h1>
+        </div>
+
+        <div class="container">
+          <div class="row">
+
+            <div class="col-12 col-md-8">
+                <div  id="network"></div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <input class="b1 btn btn-secondary " type="file" id="selectFiles" value="Import" />
+
+                <input   id="import" class="btn btn-secondary " type="button" id="import_button " onclick="importNetwork()" value="import"></input>
+
+                <input class="btn btn-secondary" type="button" id="export_button" onclick="exportNetwork()" value="export"></input>
+
+                <input class="btn btn-secondary" type="button" id="destroy_button" onclick="destroyNetwork()" value="destroy"></input>
+
+              </div>
+          </div>
+        </div>
+
+              <script type="text/javascript">
+            //built upon code used from http://visjs.org/examples/network/other/saveAndLoad.html
+            	var network;
+            	var container;
+            	var exportArea;
+        	    var importButton;
+         	    var exportButton;
+         	    var nodes;
+         	    var edges;
+         	    var data;
+
+            	function init() {
+                	container = document.getElementById('network');
+                	exportArea = document.getElementById('input_output');
+                	importButton = document.getElementById('import_button');
+                	exportButton = document.getElementById('export_button');
+
+                	draw();
+                	console.log('init')
+                	console.log(typeof nodes)
+            	}
+
+	   	        document.getElementById('import').onclick = function() {
+                    var files = document.getElementById('selectFiles').files;
+                    console.log(files);
+
+                    if (files.length <= 0) {
+                            return false;
+                    }
+
+                    var fr = new FileReader();
+
+                    fr.onload = function(e) {
+                        console.log(e);
+                        var result = JSON.parse(e.target.result);
+                        var formatted = JSON.stringify(result, null, 2);
+                        importNetwork(formatted);
+                        }
+
+                    fr.readAsText(files.item(0));
+                };
+
+            	function addConnections(elem, index) {
+                        // need to replace this with a tree of the network, then get child direct children of the element
+                        elem.connections = network.getConnectedNodes(index);
+
+                    }
+
+                function destroyNetwork() {
+                        network.destroy();
+                    }
+
+                function clearOutputArea() {
+                        exportArea.value = "";
+                    }
+
+
+
+                function download(filename, text) {
+              		var element = document.createElement('a');
+              		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+              		element.setAttribute('download', filename);
+
+              		element.style.display = 'none';
+              		document.body.appendChild(element);
+
+              		element.click();
+
+              		document.body.removeChild(element);
+            	}
+
+
+            	function draw() {
+                	// create a network of nodes with a function
+
+
+                	//var data = getScaleFreeNetwork(5);
+                	//var data = getScaleFreeNetwork(5);
+
+                	//No data has been passed, so create a hard coded network
+                    if (nodes == undefined){
+                       nodes = new vis.DataSet([
+                        {id: 1, label: 'Node 1'},
+                        {id: 2, label: 'Node 2'},
+                        {id: 3, label: 'Node 3'},
+                        {id: 4, label: 'Node 4'},
+                        {id: 5, label: 'Node 5'},
+                        {id: 6, label: 'Node 6'},
+                        {id: 7, label: 'Node 7'},
+                        {id: 8, label: 'Node 8'}
+                      ]);
+
+                      // create an array with edges
+                      edges = new vis.DataSet([
+                        {from: 1, to: 8, arrows:'to'},
+                        {from: 1, to: 3, arrows:'to'},
+                        {from: 1, to: 2, arrows:'to, from'},
+                        {from: 2, to: 4, arrows:'to'},
+                        {from: 2, to: 5, arrows:'to, from'},
+                        {from: 5, to: 6, arrows:'to'},
+                        {from: 6, to: 7, arrows:'from'}               ]);
+                    }
+                    console.log('draw');
+                    console.log(nodes)
+                    console.log(nodes.get());
+
+                      // create a network
+                      var container = document.getElementById('network');
+                      var data = {
+                        nodes: nodes,
+                        edges: edges
+                      };
+
+                      var options = {};
+                	network = new vis.Network(container, data, {manipulation:{enabled:false}});
+
+                	clearOutputArea();
+                	return nodes, edges
+            	}
+
+
+            	function exportNetwork() {
+                	clearOutputArea();
+                	console.log(nodes.get());
+                	console.log(edges.get());
+                	//var nodes = data['nodes'];
+                //	var edges = data['edges'];
+                	//console.log(nodes);
+                    //console.log(edges);
+
+                    /* old way
+                	//nodes.forEach(addConnections);
+                    nodes.forEach(addEdges);
+                	// pretty print node data
+
+                    */
+
+                    var exportData = {}
+
+                    exportData['nodes']=nodes.get()
+                    exportData['edges']=edges.get()
+                    console.log(exportData);
+                    var exportValue = JSON.stringify(exportData);
+                	console.log(exportValue);
+
+			        download("filename.json", exportValue);
+
+                   exportArea.value = exportValue;
+
+                	resizeExportArea();
+            	}
+
+            	function importNetwork(fileValue) {
+
+                	if (fileValue == "import"){
+				        var inputValue = exportArea.value;
+			         }
+
+                    else{
+				        var inputValue=fileValue;
+			        }
+
+			        console.log(inputValue);
+                    var inputData = JSON.parse(inputValue);
+                    console.log(inputData)
+                    nodes = new vis.DataSet(inputData['nodes'])
+                    edges = new vis.DataSet(inputData['edges'])
+
+                    draw()
+                       /* var data = {
+                            nodes: getNodeData(inputData),
+                            edges: getEdgeData(inputData)
+
+
+                	}
+                	console.log(data);
+
+               	 	network = new vis.Network(container, data, {});
+
+                	resizeExportArea();*/
+            	    }
+
+                function getNodeData(data) {
+                	var networkNodes = [];
+
+                	data.forEach(function(elem, index, array) {
+                    	networkNodes.push({id: elem.id, label: elem.id, x: elem.x, y: elem.y});
+                	});
+
+                	return new vis.DataSet(networkNodes);
+            	}
+
+            	function getNodeById(data, id) {
+                	for (var n = 0; n < data.length; n++) {
+                    		if (data[n].id == id) {  // double equals since id can be numeric or string
+                      			return data[n];
+                    		}
+                	};
+
+                	throw 'Can not find id \'' + id + '\' in data';
+            	}
+
+            	function getEdgeData(data) {
+                	var networkEdges = [];
+
+                	data.forEach(function(node) {
+                    		// add the connection
+                    		node.connections.forEach(function(connId, cIndex, conns) {
+                        		networkEdges.push({from: node.id, to: connId});
+                        		let cNode = getNodeById(data, connId);
+
+                        		var elementConnections = cNode.connections;
+
+                        		// remove the connection from the other node to prevent duplicate connections
+                        		var duplicateIndex = elementConnections.findIndex(function(connection) {
+                          			return connection == node.id; // double equals since id can be numeric or string
+                        		});
+
+
+                        		if (duplicateIndex != -1) {
+                          			elementConnections.splice(duplicateIndex, 1);
+                        		};
+                  		});
+                	});
+
+                    return new vis.DataSet(networkEdges);
+               }
+
+                function objectToArray(obj) {
+                    return Object.keys(obj).map(function (key) {
+                      obj[key].id = key;
+                      return obj[key];
+                    });
+                }
+
+                function resizeExportArea() {
+                    exportArea.style.height = (1 + exportArea.scrollHeight) + "px";
+                }
+
+            init();
+        </script>
+    </body>
+</html>
