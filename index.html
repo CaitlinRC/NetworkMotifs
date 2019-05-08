@@ -3,41 +3,55 @@
 <head>
     <title>Network Vis Tests</title>
 
-        <script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
-        <script type="text/javascript" src="http://visjs.org/examples/network/exampleUtil.js"></script>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheet.css') }}"/>
-        <link rel="stylesheet" href="../stylesheet.css">
+    <style type="text/css">
+            body {
+              font: 10pt sans;
+            }
+            #network {
+                float:left;
+                width: 600px;
+                height: 600px;
+                margin:5px;
+                border: 1px solid lightgray;
+            }
+            #config {
+                float:left;
+                width: 400px;
+                height: 600px;
+            }
+            #input_output {
+                height: 10%;
+                width: 15%;
+            }
 
-</head>
+            p {
+                font-size:16px;
+                max-width:700px;
+            }
+        </style>
+    <script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
+    <script type="text/javascript" src="http://visjs.org/examples/network/exampleUtil.js"></script>
+    <link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css"/>
+
     <body>
-      <div class="jumbotron text-center">
-        <h1 >Network motifs tool</h1>
-      </div>
+        
+	<div id="network"></div>
 
-      <div class="container">
-        <div class="row">
+        <div>
+            <textarea id=input_output></textarea>
+	    </br>
+	    <input type="file" id="selectFiles" value="Import" />
+	    </br>
+	    </br>
+	    <button id="import">Import File</button>
+            </br>
+		</br>
+	    
 
-          <div class="col-12 col-md-8">
-              <div  id="network"></div>
-          </div>
-
-          <div class="col-6 col-md-4">
-              <input class="b1 btn btn-secondary " type="file" id="selectFiles" value="Import" />
-
-              <input   id="import" class="btn btn-secondary " type="button" id="import_button " onclick="importNetwork()" value="import"></input>
-
-              <input class="btn btn-secondary" type="button" id="export_button" onclick="exportNetwork()" value="export"></input>
-
-              <input class="btn btn-secondary" type="button" id="destroy_button" onclick="destroyNetwork()" value="destroy"></input>
-
-            </div>
+	    <input type="button" id="import_button" onclick="importNetwork()" value="import"></input>
+            <input type="button" id="export_button" onclick="exportNetwork()" value="export"></input>
+            <input type="button" id="destroy_button" onclick="destroyNetwork()" value="destroy"></input>
         </div>
-      </div>
 
         <script type="text/javascript">
             //built upon code used from http://visjs.org/examples/network/other/saveAndLoad.html
@@ -60,7 +74,7 @@
                 	console.log('init')
                 	console.log(typeof nodes)
             	}
-
+		
 	   	        document.getElementById('import').onclick = function() {
                     var files = document.getElementById('selectFiles').files;
                     console.log(files);
@@ -94,7 +108,7 @@
                 function clearOutputArea() {
                         exportArea.value = "";
                     }
-
+            	
 
 
                 function download(filename, text) {

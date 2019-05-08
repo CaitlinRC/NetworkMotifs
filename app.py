@@ -59,11 +59,11 @@ def uploaded():
         edges[id]=item
         id+=1
 
-    triads,stats = runTriads(g)
+    triads,sigStats, ratioStats = runTriads(g)
     for triad in triads:
         print(triad)
-    print(stats)
-    return render_template('graphUpload.html', nodes=nodes, edges=edges, triads=str(triads),stats=stats)
+    #print(stats)
+    return render_template('graphUpload.html', nodes=nodes, edges=edges, triads=str(triads),sigStats=sigStats, ratioStats=ratioStats)
 
 
 
@@ -292,21 +292,24 @@ def runTriads(graph):
 
 
 
-    statList = []
+    sigList = []
+    ratioList = []
 
     triadListIndex = 0
     for i in range(0, len(TRIAD_NAMES)):
         if(TRIAD_NAMES[i] in triadList):
-            statList.append([TRIAD_NAMES[i], sigProfile[triadListIndex]])
+            sigList.append([TRIAD_NAMES[i], sigProfile[triadListIndex]])
+            ratioList.append([TRIAD_NAMES[i], subgraphRatio[triadListIndex]])
             triadListIndex += 1
         else:
-            statList.append([TRIAD_NAMES[i], 0]) 
+            sigList.append([TRIAD_NAMES[i], 0]) 
+            ratioList.append([TRIAD_NAMES[i], 0])
     #for i in range(0, len(triadList)):
 
-        #statList.append(['Triad Type: ', triadList[i], 'Significance Profile: ', sigProfile[i], 'Subgraph Ratio Profile: ', subgraphRatio[i]])
+        #ratioList.append(['Triad Type: ', triadList[i], 'Significance Profile: ', sigProfile[i], 'Subgraph Ratio Profile: ', subgraphRatio[i]])
 
 
-    return jsonList,statList
+    return jsonList, sigList, ratioList
 #
 # @app.route('/about/')
 # def about():

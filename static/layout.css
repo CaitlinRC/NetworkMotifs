@@ -5,6 +5,11 @@
      /* background-color:#898e94; */
      background-color: #8292AC;
 }
+.h2, h2{
+    font-size: 30px !important;
+    padding-right: 15px !important;
+    padding-left: 60px  !important;
+  }
 #loading-screen{
     position: absolute;
     left: 50%;
@@ -21,7 +26,6 @@
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
-
 @-webkit-keyframes spin {
 0% { -webkit-transform: rotate(0deg); }
 100% { -webkit-transform: rotate(360deg); }
@@ -56,9 +60,7 @@
     text-align: center;
     margin: 20px 20px 60px 60px;
 }
-.b1{
-  width: 75%;
-}
+
 #selectFiles{
     position: relative;
     display: block;
@@ -156,33 +158,3 @@ p {
          float: right;
     }
 }
-/* * Cover */
- .cover {
-     padding: 0 1.5rem;
-}
- .cover .btn-lg {
-     padding: .75rem 1.25rem;
-     font-weight: 700;
-}
-/* * Banner */
-.banner {
-  width: 100% relative;
-}
-/* * Footer */
- .mastfoot {
-     color: rgba(255, 255, 255, .5);
- /* a,a:focus, a:hover {
-      color: #fff;
- } */
- /* body {
-     display: -ms-flexbox;
-     display: -webkit-box;
-     display: flex;
-     -ms-flex-pack: center;
-     -webkit-box-pack: center;
-     justify-content: center;
-     color: #f3efef;
-     text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
-     box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
- } */
- /* Custom default button */
