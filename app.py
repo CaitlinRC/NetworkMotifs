@@ -9,7 +9,6 @@ import statistics
 import json
 ALLOWED_EXTENSIONS = ['json', 'gml', 'txt']
 
-# app.secret_key="sUPerSEECretKeyTHing1212132fbmdfb£££$$*"
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -32,9 +31,13 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
 
+            if filename.rsplit('.', 1)[1].lower() == '.mtx':
+                G = nx.read_adjlist(chosenFile, create_using=nx.DiGraph())
+                nx.write_gml(G, 'graphFile.gml')  # THIS IS NOT THREAD SAFE. CAN IGNORE AS THEY WANT IT LOCALLY
+                return redirect(url_for('uploaded'))
             if filename.rsplit('.', 1)[1].lower() == 'gml':
                 G = nx.read_gml(file, label='id')
-                nx.write_gml(G,'graphFile.gml') #THIS IS NOT THREAD SAFE. CAN IGNORE AS THEY WANT IT LOCALLY
+                nx.write_gml(G,'graphFile.gml') # THIS IS NOT THREAD SAFE. CAN IGNORE AS THEY WANT IT LOCALLY
                 return redirect(url_for('uploaded'))
     return render_template('testVis.html', label='label')
 
