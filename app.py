@@ -39,7 +39,7 @@ def upload_file():
                 G = nx.read_gml(file, label='id')
                 nx.write_gml(G,'graphFile.gml') # THIS IS NOT THREAD SAFE. CAN IGNORE AS THEY WANT IT LOCALLY
                 return redirect(url_for('uploaded'))
-    return render_template('testVis.html', label='label')
+    return render_template('graphUpload.html', label='label')
 
 
 @app.route('/uploaded')
@@ -66,7 +66,7 @@ def uploaded():
     for triad in triads:
         print(triad)
     #print(stats)
-    return render_template('graphUpload.html', nodes=nodes, edges=edges, triads=str(triads),sigStats=sigStats, ratioStats=ratioStats)
+    return render_template('graphDisplay.html', nodes=nodes, edges=edges, triads=str(triads),sigStats=sigStats, ratioStats=ratioStats)
 
 
 

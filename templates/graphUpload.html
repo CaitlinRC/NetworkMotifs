@@ -2,357 +2,60 @@
 <html>
 <head>
 
-    <title>Upload new File</title>
 
-    <script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
-    <script type="text/javascript" src="http://visjs.org/examples/network/exampleUtil.js"></script>
-    <link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css"/>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="../static/main.css"/>
+<title>Network Vis Tests</title>
+
+<script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
+<script type="text/javascript" src="http://visjs.org/examples/network/exampleUtil.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css"/>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"/>
+<link rel="stylesheet" type="text/css" href="../static/main.css"/>
 
 
 </head>
+<div id="loading-screen" style="display: none">
 
-<body>
-
-  <div class="jumbotron text-center">
-    <h1 >Network motifs tool</h1>
   </div>
-  <div id="loading-screen" style="display: none">
-  </div>
-      <div class="container">
+  <body>
+    <title>Upload new File</title>
 
-        <div class="row">
-          <div class="col-sm">
-            <div id="curve_ratio_chart"></div>
-          </div>
-          <div  class="col-sm">
-            <div  id="network"></div>
-          </div>
-          <div class="col-sm">
-            <div id="curve_sig_chart"></div>
-          </div>
-         </div>
+    <div class="jumbotron text-center">
+      <h1 >Network motifs tool</h1>
+    </div>
+    <div class="container">
+      <div class="row">
 
+    <div class="col-12 col-md-8">
 
-</div>
-    <!--
-    <div id = 'p'class="col-6 col-md-4">
-      {% for stat in stats %}
+    </div>
 
-          {% for s in stat %}
-           <p>{{s}}  </p>
-          {% endfor %}
+    <div class="col-6 col-md-4">
 
-      {% endfor %}
+      <div id="form">
+        <h2 >Upload new File</h2>
+          <form  method=post enctype=multipart/form-data >
+            <input class = "b1 btn btn-secondary"type=file name=file>
+            <input  class = "btn btn-secondary"type=submit value=Upload onclick="load()">
+          </form>
       </div>
-      -->
+      </div>
+  </div>
+  </div>
 
-        <script type="text/javascript">
-            //built upon code used from http://visjs.org/examples/network/other/saveAndLoad.html
-            	var network;
-            	var container;
-            	var exportArea;
-        	    var importButton;
-         	    var exportButton;
-         	    var nodes;
-         	    var edges;
-         	    var data;
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 
-            	function init() {
+    <script>
+        function load() {
+            console.log("load")
+            $( "#loading-screen" ).show( "slow" );
+            	    $( "#form" ).hide( "slow" );
 
-          <!-- Some of your processing -->
-
-                	container = document.getElementById('network');
-                	exportArea = document.getElementById('input_output');
-                	importButton = document.getElementById('import_button');
-                	exportButton = document.getElementById('export_button');
-                    $( "#loading-screen" ).show( "slow" );
-                    $( "#network" ).hide( "slow" );
-                    $( "#curve_ratio_chart" ).hide( );
-                    $( "#curve_sig_chart" ).hide( );
-                    $("#p").hide( );
-
-                	draw();
-                	console.log('init')
-                	console.log(typeof nodes)
-                    network.fit()
-                    $( "#loading-screen" ).hide( "slow" );
-                    $( "#network" ).show( "slow" );
-                    $( "#curve_ratio_chart" ).show( "slow" );
-                    $( "#curve_sig_chart" ).show( "slow" );
-                  $("#p").show("slow" );
-
-
-            	}
-
-
-            	function addConnections(elem, index) {
-                        // need to replace this with a tree of the network, then get child direct children of the element
-                        elem.connections = network.getConnectedNodes(index);
-
-                    }
-
-                function destroyNetwork() {
-                        network.destroy();
-                    }
-
-                function clearOutputArea() {
-                        exportArea.value = "";
-                    }
-
-
-
-                function download(filename, text) {
-              		var element = document.createElement('a');
-              		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-              		element.setAttribute('download', filename);
-
-              		element.style.display = 'none';
-              		document.body.appendChild(element);
-
-              		element.click();
-
-              		document.body.removeChild(element);
-            	}
-
-
-            	function draw() {
-            	    var nodes_import =JSON.parse('{{ nodes | tojson | safe}}');
-            	    //console.log(importData);
-                	// create a network of nodes with a function
-
-                    var nodes = new vis.DataSet()
-                    for (var key in nodes_import) {
-                        if (nodes_import.hasOwnProperty(key)) {
-                            console.log(key + " -> " + nodes_import[key]);
-                            nodes.add({id:nodes_import[key]["id"],label:nodes_import[key]["label"]});
-
-                        }
-                    }
-                    var edges_import =JSON.parse('{{ edges | tojson | safe}}');
-            	    //console.log(importData);
-                	// create a network of nodes with a function
-
-                    var edges = new vis.DataSet()
-                    for (var id in edges_import) {
-                        if (edges_import.hasOwnProperty(id)) {
-                            console.log(id + "edge -> " + edges_import[id]);
-                            edges.add({from:edges_import[id][0],to:edges_import[id][1],arrows:'from'});
-
-                        }
-                    }
-
-                	//var data = getScaleFreeNetwork(5);
-                	//var data = getScaleFreeNetwork(5);
-
-                	//No data has been passed, so create a hard coded network
-                    if (nodes == undefined){
-                       nodes = new vis.DataSet([
-                        {id: 1, label: 'Node 1'},
-                        {id: 2, label: 'Node 2'},
-                        {id: 3, label: 'Node 3'},
-                        {id: 4, label: 'Node 4'},
-                        {id: 5, label: 'Node 5'},
-                        {id: 6, label: 'Node 6'},
-                        {id: 7, label: 'Node 7'},
-                        {id: 8, label: 'Node 8'}
-                      ]);
-
-                      // create an array with edges
-                      edges = new vis.DataSet([
-                        {from: 1, to: 8, arrows:'to'},
-                        {from: 1, to: 3, arrows:'to'},
-                        {from: 1, to: 2, arrows:'to, from'},
-                        {from: 2, to: 4, arrows:'to'},
-                        {from: 2, to: 5, arrows:'to, from'},
-                        {from: 5, to: 6, arrows:'to'},
-                        {from: 6, to: 7, arrows:'from'}               ]);
-                    }
-                    console.log('draw');
-                    console.log(nodes)
-                    console.log(nodes.get());
-
-                      // create a network
-                      var container = document.getElementById('network');
-                      var data = {
-                        nodes: nodes,
-                        edges: edges
-                      };
-
-                      var options = {};
-                    network = new vis.Network(container, data, {manipulation:{enabled:false}});
-                    console.log("we done")
-                    return nodes //, edges
-            	}
-
-
-            	function exportNetwork() {
-                	clearOutputArea();
-                	console.log(nodes.get());
-                	console.log(edges.get());
-
-                    var exportData = {}
-
-                    exportData['nodes']=nodes.get()
-                    exportData['edges']=edges.get()
-                    console.log(exportData);
-                    var exportValue = JSON.stringify(exportData);
-                	console.log(exportValue);
-
-			        download("filename.json", exportValue);
-
-                   exportArea.value = exportValue;
-
-                	resizeExportArea();
-            	}
-
-            	function importNetwork(fileValue) {
-
-                	if (fileValue == "import"){
-				        var inputValue = exportArea.value;
-			         }
-
-                    else{
-				        var inputValue=fileValue;
-			        }
-
-			        console.log(inputValue);
-                    var inputData = JSON.parse(inputValue);
-                    console.log(inputData)
-                    nodes = new vis.DataSet(inputData['nodes'])
-                    edges = new vis.DataSet(inputData['edges'])
-
-                    draw()
-
-            	    }
-
-                function getNodeData(data) {
-                	var networkNodes = [];
-
-                	data.forEach(function(elem, index, array) {
-                    	networkNodes.push({id: elem.id, label: elem.id, x: elem.x, y: elem.y});
-                	});
-
-                	return new vis.DataSet(networkNodes);
-            	}
-
-            	function getNodeById(data, id) {
-                	for (var n = 0; n < data.length; n++) {
-                    		if (data[n].id == id) {  // double equals since id can be numeric or string
-                      			return data[n];
-                    		}
-                	};
-
-                	throw 'Can not find id \'' + id + '\' in data';
-            	}
-
-            	function getEdgeData(data) {
-                	var networkEdges = [];
-
-                	data.forEach(function(node) {
-                    		// add the connection
-                    		node.connections.forEach(function(connId, cIndex, conns) {
-                        		networkEdges.push({from: node.id, to: connId});
-                        		let cNode = getNodeById(data, connId);
-
-                        		var elementConnections = cNode.connections;
-
-                        		// remove the connection from the other node to prevent duplicate connections
-                        		var duplicateIndex = elementConnections.findIndex(function(connection) {
-                          			return connection == node.id; // double equals since id can be numeric or string
-                        		});
-
-
-                        		if (duplicateIndex != -1) {
-                          			elementConnections.splice(duplicateIndex, 1);
-                        		};
-                  		});
-                	});
-
-                    return new vis.DataSet(networkEdges);
-               }
-
-                function objectToArray(obj) {
-                    return Object.keys(obj).map(function (key) {
-                      obj[key].id = key;
-                      return obj[key];
-                    });
-                }
-
-                function resizeExportArea() {
-                    exportArea.style.height = (1 + exportArea.scrollHeight) + "px";
-                }
-
-            init();
-  </script>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-      <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawSigChart);
-        google.charts.setOnLoadCallback(drawRatioChart);
-        function drawSigChart() {
-
-
-
-          var SigData = new google.visualization.DataTable();
-            SigData.addColumn('string', 'Triad');
-            SigData.addColumn('number','Significance');
-            SigData.addRows({{sigStats | safe }});
-
-
-
-          var sigOptions = {
-            title: 'Significance',
-            //curveType: 'function',
-            legend: { position: 'bottom' }
-          };
-
-
-          var sigChart = new google.visualization.LineChart(document.getElementById('curve_sig_chart'));
-          sigChart.draw(SigData, sigOptions);
-          var ratioData = new google.visualization.DataTable();
-            ratioData.addColumn('string', 'Triad');
-            ratioData.addColumn('number','Significance');
-            ratioData.addRows({{ratioStats | safe }});
-
-           var ratioOptions = {
-            title: 'Subgraph Ratio',
-            //curveType: 'function',
-            legend: { position: 'bottom' }
-          };
-
-          var ratioChart = new google.visualization.LineChart(document.getElementById('curve_ratio_chart'));
-
-
-          ratioChart.draw(ratioData, ratioOptions);
         }
-        function drawRatioChart() {
-
-
-
-          var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Triad');
-            data.addColumn('number','Sub Graph Ratio');
-            data.addRows({{ratioStats | safe }});
-
-          var options = {
-            title: 'Subgraph Ratio',
-            //curveType: 'function',
-            legend: { position: 'bottom' }
-          };
-
-          var chart = new google.visualization.LineChart(document.getElementById('curve_ratio_chart'));
-
-          chart.draw(data, options);
-        }
-      </script>
-
-
-</body>
+    </script>
 </html>
