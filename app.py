@@ -63,8 +63,8 @@ def uploaded():
         id+=1
 
     triads,sigStats, ratioStats = runTriads(g)
-    for triad in triads:
-        print(triad)
+    # for triad in triads:
+      #  print(triad)
     #print(stats)
     return render_template('graphDisplay.html', nodes=nodes, edges=edges, triads=str(triads),sigStats=sigStats, ratioStats=ratioStats)
 
