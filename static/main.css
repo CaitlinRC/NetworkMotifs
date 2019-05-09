@@ -10,6 +10,8 @@
     padding-right: 15px !important;
     padding-left: 60px  !important;
   }
+
+
 #loading-screen{
     position: absolute;
     left: 50%;
@@ -98,19 +100,34 @@ element.style {
 }
 #network {
     float: left;
-    width: 600px;
+    width: 500px;
     height: 400px;
     margin: 5px;
     border: 3px solid #E8E8E8;
     background-color: #F8F8F8;
-
   }
 
 
+  #curve_sig_chart{
+    width: 300px;
+     height: 400px;
+     float: right;
+      margin-right: 20px;
+    border: 3px solid #E8E8E8;
+    background-color: #F8F8F8;
+  }
+  #curve_ratio_chart{
+  width: 300px;
+   height: 400px;
+   float: right;
+  margin-right: 10px;
+  border: 3px solid #E8E8E8;
+  background-color: #F8F8F8;
+  }
 #config {
     float:left;
-    width: 400px;
-    height: 600px;
+    width: 500px;
+    height: 400px;
 }
 
 p {
